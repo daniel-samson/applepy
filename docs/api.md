@@ -13,7 +13,7 @@ The ApplePy API provides RESTful endpoints for managing office locations in a mo
 ### Base URL
 
 ```
-http://localhost:5000
+http://127.0.0.1:5000
 ```
 
 ### Response Format
@@ -120,7 +120,7 @@ GET /offices/{office_code}
 
 **Example Request:**
 ```bash
-curl http://localhost:5000/offices/NYC
+curl http://127.0.0.1:5000/offices/NYC
 ```
 
 ---
@@ -173,7 +173,7 @@ POST /offices
 
 **Example Request:**
 ```bash
-curl -X POST http://localhost:5000/offices \
+curl -X POST http://127.0.0.1:5000/offices \
   -H "Content-Type: application/json" \
   -d '{
     "city": "Los Angeles",
@@ -241,7 +241,7 @@ PUT /offices/{office_code}
 
 **Example Request:**
 ```bash
-curl -X PUT http://localhost:5000/offices/NYC \
+curl -X PUT http://127.0.0.1:5000/offices/NYC \
   -H "Content-Type: application/json" \
   -d '{
     "office_code": "NYC",
@@ -284,7 +284,7 @@ DELETE /offices/{office_code}
 
 **Example Request:**
 ```bash
-curl -X DELETE http://localhost:5000/offices/NYC
+curl -X DELETE http://127.0.0.1:5000/offices/NYC
 ```
 
 ---
@@ -313,35 +313,35 @@ You can test the Offices API using curl, Postman, or any HTTP client.
 uv run applepy flask
 ```
 
-The server will start on `http://localhost:5000`.
+The server will start on `http://127.0.0.1:5000`.
 
 ### Basic Workflow
 
 1. **Create an office:**
    ```bash
-   curl -X POST http://localhost:5000/offices \
+   curl -X POST http://127.0.0.1:5000/offices \
      -H "Content-Type: application/json" \
      -d '{"office_code":"BOS","city":"Boston","state":"MA","country":"USA"}'
    ```
 
 2. **List all offices:**
    ```bash
-   curl http://localhost:5000/offices
+   curl http://127.0.0.1:5000/offices
    ```
 
 3. **Get specific office:**
    ```bash
-   curl http://localhost:5000/offices/BOS
+   curl http://127.0.0.1:5000/offices/BOS
    ```
 
 4. **Update office:**
    ```bash
-   curl -X PUT http://localhost:5000/offices/BOS \
+   curl -X PUT http://127.0.0.1:5000/offices/BOS \
      -H "Content-Type: application/json" \
      -d '{"office_code":"BOS","city":"Boston","state":"MA","country":"USA"}'
    ```
 
 5. **Delete office:**
    ```bash
-   curl -X DELETE http://localhost:5000/offices/BOS
+   curl -X DELETE http://127.0.0.1:5000/offices/BOS
    ```
