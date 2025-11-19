@@ -79,3 +79,10 @@ def test_create_office_no_json(client: Client) -> None:
     # This should trigger the "No JSON data provided" check
     assert response.status_code in (400, 500)
     assert "error" in response.json
+
+
+def test_get_office_not_found(client: Client) -> None:
+    response = client.get("/offices/NONEXISTENT")
+    assert response.status_code == 404
+    assert response.headers["Content-Type"] == "application/json"
+    assert "error" in response.json
