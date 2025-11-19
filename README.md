@@ -22,8 +22,8 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 ### Virtual Environment
 
 ```sh
-uv sync
 source .venv/bin/activate
+uv sync
 ```
 ### Documentation
 
