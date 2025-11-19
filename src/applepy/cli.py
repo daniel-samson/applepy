@@ -20,18 +20,12 @@ def make_parser() -> argparse.ArgumentParser:
     # flask command
     subparsers.add_parser(
         "flask",
-        help="Run a Flask application.",
-    )
-
-    # db command
-    subparsers.add_parser(
-        "db:migrate",
-        help="Run database migrations.",
+        help="Run as a Flask application.",
     )
 
     # db:migrate command
     subparsers.add_parser(
-        "migrate",
+        "db:migrate",
         help="Run database migrations.",
     )
 
