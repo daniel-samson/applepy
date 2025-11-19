@@ -36,3 +36,8 @@ uv run mkdocs serve
 ```sh
 uv run applepy
 ```
+
+## Documentation
+
+- [Developers documentation](docs/index.md)
+- [API documentation](docs/api.md)
