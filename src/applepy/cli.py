@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 from typing import Sequence
 
+from applepy.appleflask import app
+
 
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -35,6 +37,12 @@ def make_parser() -> argparse.ArgumentParser:
     add_parser.add_argument("a", type=int, help="First integer.")
     add_parser.add_argument("b", type=int, help="Second integer.")
 
+    # Example: flask command
+    subparsers.add_parser(
+        "flask",
+        help="Run a Flask application.",
+    )
+
     return parser
 
 
@@ -46,6 +54,10 @@ def run_command(args: argparse.Namespace) -> int:
     if args.command == "add":
         result = args.a + args.b
         print(result)
+        return 0
+
+    if args.command == "flask":
+        app.run()
         return 0
 
     # This should not happen because parser requires a command
