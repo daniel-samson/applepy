@@ -12,6 +12,9 @@ run:
 docs:
 	uv run mkdocs build
 
+docs-serve:
+	uv run mkdocs serve
+
 uv:
 	curl -LsSf https://astral.sh/uv/install.sh | sh
 

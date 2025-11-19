@@ -42,6 +42,7 @@ def repository(session: Session) -> OfficeRepository:
 def sample_office_create() -> OfficeCreate:
     """Create a sample OfficeCreate schema."""
     return OfficeCreate(
+        office_code="NYC",
         city="New York",
         state="NY",
         country="USA",
@@ -237,6 +238,7 @@ class TestOfficeRepositoryCreate:
     ) -> None:
         """Test that create() persists the office in the database."""
         office_data = OfficeCreate(
+            office_code="NYC",
             city="New York",
             state="NY",
             country="USA",

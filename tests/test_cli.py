@@ -34,3 +34,73 @@ def test_parser_requires_command() -> None:
     except SystemExit:
         # Expected behavior
         pass
+
+
+def test_run_command_db_migrate() -> None:
+    """Test that db:migrate command executes."""
+    from unittest.mock import patch
+
+    from applepy.cli import run_command
+
+    with patch("applepy.cli.subprocess.run") as mock_run:
+        parser = make_parser()
+        args = parser.parse_args(["db:migrate"])
+        result = run_command(args)
+        assert result == 0
+        mock_run.assert_called_once_with(["alembic", "upgrade", "head"])
+
+
+def test_run_command_migration_create() -> None:
+    """Test that migration:create command executes."""
+    from unittest.mock import patch
+
+    from applepy.cli import run_command
+
+    with patch("applepy.cli.subprocess.run") as mock_run:
+        parser = make_parser()
+        args = parser.parse_args(["migration:create", "add_new_table"])
+        result = run_command(args)
+        assert result == 0
+        mock_run.assert_called_once_with(
+            ["alembic", "revision", "--autogenerate", "-m", "add_new_table"]
+        )
+
+
+def test_run_command_unknown_command() -> None:
+    """Test that unknown command raises RuntimeError."""
+    import argparse
+
+    from applepy.cli import run_command
+
+    args = argparse.Namespace(command="unknown_command")
+    try:
+        run_command(args)
+        raise AssertionError("Should have raised RuntimeError")
+    except RuntimeError as e:
+        assert "Unknown command" in str(e)
+
+
+def test_run_command_flask() -> None:
+    """Test that flask command executes."""
+    from unittest.mock import patch
+
+    from applepy.cli import run_command
+
+    with patch("applepy.flask.app") as mock_flask_app:
+        parser = make_parser()
+        args = parser.parse_args(["flask"])
+        result = run_command(args)
+        assert result == 0
+        mock_flask_app.run.assert_called_once()
+
+
+def test_main_function() -> None:
+    """Test main function with db:migrate command."""
+    from unittest.mock import patch
+
+    from applepy.cli import main
+
+    with patch("applepy.cli.subprocess.run") as mock_run:
+        result = main(["db:migrate"])
+        assert result == 0
+        mock_run.assert_called_once_with(["alembic", "upgrade", "head"])

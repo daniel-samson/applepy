@@ -27,6 +27,7 @@ class OfficeRepository:
 
     def create(self, data: OfficeCreate) -> Office:
         office = Office(
+            office_code=data.office_code,
             city=data.city,
             state=data.state,
             country=data.country,

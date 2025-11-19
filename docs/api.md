@@ -137,6 +137,7 @@ POST /offices
 **Request Body:**
 ```json
 {
+  "office_code": "LAX",
   "city": "Los Angeles",
   "state": "CA",
   "country": "USA",
@@ -320,7 +321,7 @@ The server will start on `http://localhost:5000`.
    ```bash
    curl -X POST http://localhost:5000/offices \
      -H "Content-Type: application/json" \
-     -d '{"city":"Boston","state":"MA","country":"USA"}'
+     -d '{"office_code":"BOS","city":"Boston","state":"MA","country":"USA"}'
    ```
 
 2. **List all offices:**
