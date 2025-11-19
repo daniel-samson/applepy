@@ -176,6 +176,7 @@ POST /offices
 curl -X POST http://127.0.0.1:5000/offices \
   -H "Content-Type: application/json" \
   -d '{
+    "office_code": "LAX",
     "city": "Los Angeles",
     "state": "CA",
     "country": "USA",
