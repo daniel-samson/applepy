@@ -9,6 +9,13 @@ API for a model car shop
 - Python 3.6+
 - [UV](https://github.com/astral-sh/uv)
 
+## Implementations
+
+This project explores different implementations:
+
+- [flask](https://github.com/daniel-samson/applepy/tree/env-flask)
+- [fast-api](https://github.com/daniel-samson/applepy/tree/env-api)
+
 ## Setup Development Environment
 
 ### Install UV
