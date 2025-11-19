@@ -16,8 +16,6 @@ db.init_app(app)
 def hello_world() -> dict[str, str]:
     return {"message": "Hello, World!"}
 
-    return app
-
 
 @app.route("/offices", methods=["GET"])
 def get_offices() -> dict[str, list[dict[str, str]]]:
@@ -27,7 +25,7 @@ def get_offices() -> dict[str, list[dict[str, str]]]:
     return {"offices": [office.model_dump() for office in offices]}
 
 
-@app.route("/offices/<str:office_code>", methods=["GET"])
+@app.route("/offices/<office_code>", methods=["GET"])
 def get_office(office_code: str) -> dict[str, OfficeRecord]:
     session: Session = db.session()
     office_service = OfficeService(session)
@@ -43,7 +41,7 @@ def create_office(office: OfficeCreate) -> dict[str, OfficeRecord]:
     return {"office": created_office}
 
 
-@app.route("/offices/<str:office_code>", methods=["PUT"])
+@app.route("/offices/<office_code>", methods=["PUT"])
 def update_office(office_code: str, office: OfficeRecord) -> dict[str, OfficeRecord]:
     session: Session = db.session()
     office_service = OfficeService(session)
@@ -51,7 +49,7 @@ def update_office(office_code: str, office: OfficeRecord) -> dict[str, OfficeRec
     return {"office": updated_office}
 
 
-@app.route("/offices/<str:office_code>", methods=["DELETE"])
+@app.route("/offices/<office_code>", methods=["DELETE"])
 def delete_office(office_code: str) -> dict[str, str]:
     session: Session = db.session()
     office_service = OfficeService(session)
