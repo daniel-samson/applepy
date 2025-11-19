@@ -43,3 +43,17 @@ uv run mkdocs serve
 ```sh
 uv run applepy
 ```
+
+### Run  web server
+
+```sh
+docker compose up -d
+uv run applepy db:migrate
+uv run applepy flask
+```
+
+
+## Documentation
+
+- [Developers documentation](docs/index.md)
+- [API documentation](docs/api.md)

@@ -14,6 +14,10 @@ dependencies = [
     "mkdocs",
     "mkdocs-material",
     "pymdown-extensions",
+    "flask>=3.1.2",
+    "flask-pydantic>=0.13.2",
+    "flask-sqlalchemy>=3.1.1",
+    "pymysql>=1.1.2",
 ]
 
 [project.scripts]
@@ -63,5 +67,6 @@ pythonpath = ["src"]
 
 [dependency-groups]
 dev = [
+    "alembic>=1.16.5",
     "pre-commit>=4.3.0",
 ]
