@@ -14,7 +14,7 @@ API for a model car shop
 This project explores different implementations:
 
 - [flask](https://github.com/daniel-samson/applepy/tree/env-flask)
-- [fast-api](https://github.com/daniel-samson/applepy/tree/env-api)
+- [fast-api](https://github.com/daniel-samson/applepy/tree/env-fastapi)
 
 ## Setup Development Environment
 
