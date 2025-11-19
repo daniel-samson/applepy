@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
 from typing import Sequence
 
 
@@ -16,48 +17,54 @@ def make_parser() -> argparse.ArgumentParser:
         help="Sub-command to run",
     )
 
-    # Example: greet command
-    greet_parser = subparsers.add_parser(
-        "greet",
-        help="Greet someone by name.",
-    )
-    greet_parser.add_argument(
-        "name",
-        type=str,
-        help="Name of the person to greet.",
-    )
-
-    # Example: add command
-    add_parser = subparsers.add_parser(
-        "add",
-        help="Add two integers.",
-    )
-    add_parser.add_argument("a", type=int, help="First integer.")
-    add_parser.add_argument("b", type=int, help="Second integer.")
-
-    # Example: flask command
+    # flask command
     subparsers.add_parser(
         "flask",
         help="Run a Flask application.",
+    )
+
+    # db command
+    subparsers.add_parser(
+        "db:migrate",
+        help="Run database migrations.",
+    )
+
+    # db:migrate command
+    subparsers.add_parser(
+        "migrate",
+        help="Run database migrations.",
+    )
+
+    # migration:create
+    migration_create = subparsers.add_parser(
+        "migration:create",
+        help="Create a new migration.",
+    )
+    migration_create.add_argument(
+        "message",
+        help="Message for the migration.",
     )
 
     return parser
 
 
 def run_command(args: argparse.Namespace) -> int:
-    if args.command == "greet":
-        print(f"Hello, {args.name}!")
-        return 0
-
-    if args.command == "add":
-        result = args.a + args.b
-        print(result)
-        return 0
-
     if args.command == "flask":
         from applepy.flask import app
 
         app.run()
+        return 0
+
+    if args.command == "db:migrate":
+        # run alembic upgrade head
+        subprocess.run(["alembic", "upgrade", "head"])
+        return 0
+
+    if args.command == "migration:create":
+        message = args.message
+        # run `alembic revision --autogenerate -m {message}``
+        subprocess.run(["alembic", "revision", "--autogenerate", "-m", message])
+
         return 0
 
     # This should not happen because parser requires a command
