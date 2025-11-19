@@ -2,7 +2,7 @@
 API for a model car shop
 
 ## Status
-[![CI](https://github.com/daniel-samson/applepy/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/daniel-samson/applepy/actions/workflows/ci.yaml)
+[![CI](https://github.com/daniel-samson/applepy/actions/workflows/ci.yaml/badge.svg)](https://github.com/daniel-samson/applepy/actions/workflows/ci.yaml)
 
 ## Requirements
 - Python 3.6+
