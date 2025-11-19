@@ -26,7 +26,20 @@ class OfficeRepository:
         return office
 
     def create(self, data: OfficeCreate) -> Office:
+        # Generate office_code from city name (first 3 letters, uppercase)
+        base_code = data.city[:3].upper()
+        office_code = base_code
+
+        # Check for duplicates and append number if needed
+        counter = 1
+        while (
+            self.session.query(Office).filter(Office.office_code == office_code).first()
+        ):
+            office_code = f"{base_code}{counter}"
+            counter += 1
+
         office = Office(
+            office_code=office_code,
             city=data.city,
             state=data.state,
             country=data.country,
