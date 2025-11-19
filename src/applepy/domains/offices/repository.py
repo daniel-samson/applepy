@@ -38,7 +38,6 @@ class OfficeRepository:
             territory=data.territory,
         )
         self.session.add(office)
-        self.session.commit()
         return office
 
     def update(self, data: OfficeRecord) -> Office:
@@ -52,7 +51,6 @@ class OfficeRepository:
         update_data = data.model_dump(exclude_unset=True)
         for key, value in update_data.items():
             setattr(office, key, value)
-        self.session.commit()
         return office
 
     def delete(self, office_code: str) -> None:
@@ -62,4 +60,3 @@ class OfficeRepository:
         if not office:
             raise NotFoundException("Office not found")
         self.session.delete(office)
-        self.session.commit()
