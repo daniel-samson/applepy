@@ -86,3 +86,32 @@ def test_get_office_not_found(client: Client) -> None:
     assert response.status_code == 404
     assert response.headers["Content-Type"] == "application/json"
     assert "error" in response.json
+
+
+def test_update_office_not_found(client: Client) -> None:
+    office_data = {
+        "office_code": "NONEXISTENT",
+        "city": "TestCity",
+        "state": "MA",
+        "country": "USA",
+        "phone": "(617) 555-0100",
+        "address_line_1": "100 Hanover Street",
+        "address_line_2": "Suite 200",
+        "postal_code": "02108",
+        "territory": "1",
+    }
+    response = client.put(
+        "/offices/NONEXISTENT",
+        json=office_data,
+        content_type="application/json",
+    )
+    assert response.status_code == 404
+    assert response.headers["Content-Type"] == "application/json"
+    assert "error" in response.json
+
+
+def test_delete_office_not_found(client: Client) -> None:
+    response = client.delete("/offices/NONEXISTENT")
+    assert response.status_code == 404
+    assert response.headers["Content-Type"] == "application/json"
+    assert "error" in response.json
