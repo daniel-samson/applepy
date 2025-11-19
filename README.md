@@ -37,6 +37,13 @@ uv run mkdocs serve
 uv run applepy
 ```
 
+### Run  web server
+
+```sh
+uv run applepy flask
+```
+
+
 ## Documentation
 
 - [Developers documentation](docs/index.md)
