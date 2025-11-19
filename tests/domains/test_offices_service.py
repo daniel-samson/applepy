@@ -42,6 +42,7 @@ def sample_office_model() -> Office:
 def sample_office_create() -> OfficeCreate:
     """Create a sample OfficeCreate schema."""
     return OfficeCreate(
+        office_code="NYC",
         city="New York",
         state="NY",
         country="USA",
@@ -242,6 +243,7 @@ class TestOfficeServiceCreateOffice:
     ) -> None:
         """Test create_office with minimal data."""
         office_data = OfficeCreate(
+            office_code="BOS",
             city="Boston",
             state=None,
             country=None,

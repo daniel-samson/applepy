@@ -19,7 +19,7 @@ class OfficeBase(BaseModel):
 class OfficeCreate(OfficeBase):
     """Validates new office data on creation"""
 
-    pass
+    office_code: str
 
 
 class OfficeRecord(OfficeBase):

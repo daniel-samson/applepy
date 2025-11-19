@@ -50,8 +50,10 @@ def test_get_offices(client: Client) -> None:
 def test_create_office(client: Client) -> None:
     import uuid
 
+    unique_id = str(uuid.uuid4())[:5]
     office_data = {
-        "city": f"TestCity{str(uuid.uuid4())[:8]}",
+        "office_code": f"TST{unique_id}",
+        "city": f"TestCity{unique_id}",
         "state": "MA",
         "country": "USA",
         "phone": "(617) 555-0100",
