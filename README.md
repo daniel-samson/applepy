@@ -1,4 +1,4 @@
-# ApplePy
+# 🍏🥧 ApplePy
 API for a model car shop
 
 ## Status
