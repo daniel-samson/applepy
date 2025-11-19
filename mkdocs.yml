@@ -1,0 +1,26 @@
+site_name: ApplePy
+site_description: Documentation for ApplePy
+site_author: Daniel Samsom
+repo_url: https://github.com/daniel-samson/applepy
+site_url: https://daniel-samson.github.io/applepy/
+
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - Reference:
+      - API: api.md
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - admonition
+  - codehilite
+  - footnotes
+  - tables
+  - pymdownx.tasklist:
+      clickable_checkbox: true
+
+plugins:
+  - search
