@@ -44,7 +44,7 @@ def test_get_offices(client: Client) -> None:
     response = client.get("/offices")
     assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/json"
-    assert "offices" in response.json
+    assert "offices" in response.json  # type: ignore[operator]
 
 
 def test_create_office(client: Client) -> None:
@@ -67,8 +67,8 @@ def test_create_office(client: Client) -> None:
     )
     assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/json"
-    assert "office" in response.json
-    assert response.json["office"]["city"] == office_data["city"]
+    assert "office" in response.json  # type: ignore[operator]
+    assert response.json["office"]["city"] == office_data["city"]  # type: ignore[index]
 
 
 def test_create_office_no_json(client: Client) -> None:
@@ -78,14 +78,14 @@ def test_create_office_no_json(client: Client) -> None:
     # When json=None is passed, the body is "null" which parses as None
     # This should trigger the "No JSON data provided" check
     assert response.status_code in (400, 500)
-    assert "error" in response.json
+    assert "error" in response.json  # type: ignore[operator]
 
 
 def test_get_office_not_found(client: Client) -> None:
     response = client.get("/offices/NONEXISTENT")
     assert response.status_code == 404
     assert response.headers["Content-Type"] == "application/json"
-    assert "error" in response.json
+    assert "error" in response.json  # type: ignore[operator]
 
 
 def test_update_office_not_found(client: Client) -> None:
@@ -107,11 +107,55 @@ def test_update_office_not_found(client: Client) -> None:
     )
     assert response.status_code == 404
     assert response.headers["Content-Type"] == "application/json"
-    assert "error" in response.json
+    assert "error" in response.json  # type: ignore[operator]
 
 
 def test_delete_office_not_found(client: Client) -> None:
     response = client.delete("/offices/NONEXISTENT")
     assert response.status_code == 404
     assert response.headers["Content-Type"] == "application/json"
-    assert "error" in response.json
+    assert "error" in response.json  # type: ignore[operator]
+
+
+def test_create_office_invalid_json(client: Client) -> None:
+    response = client.post(
+        "/offices",
+        data="invalid json",
+        content_type="application/json",
+    )
+    assert response.status_code == 500
+    assert response.headers["Content-Type"] == "application/json"
+    assert "error" in response.json  # type: ignore[operator]
+
+
+def test_create_office_missing_required_fields(client: Client) -> None:
+    office_data = {
+        "city": "TestCity",
+        # Missing required fields like office_code, state, etc.
+    }
+    response = client.post(
+        "/offices", json=office_data, content_type="application/json"
+    )
+    assert response.status_code == 500
+    assert response.headers["Content-Type"] == "application/json"
+    assert "error" in response.json  # type: ignore[operator]
+
+
+def test_update_office_no_json(client: Client) -> None:
+    response = client.put(
+        "/offices/TEST001", json=None, content_type="application/json"
+    )
+    assert response.status_code == 500
+    assert response.headers["Content-Type"] == "application/json"
+    assert "error" in response.json  # type: ignore[operator]
+
+
+def test_update_office_invalid_json(client: Client) -> None:
+    response = client.put(
+        "/offices/TEST001",
+        data="invalid json",
+        content_type="application/json",
+    )
+    assert response.status_code == 500
+    assert response.headers["Content-Type"] == "application/json"
+    assert "error" in response.json  # type: ignore[operator]
