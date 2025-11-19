@@ -4,12 +4,12 @@ import pytest
 from flask import Flask
 from werkzeug.test import Client
 
-from applepy.flask import create_app
+from applepy.flask import app as applepyflask
 
 
 @pytest.fixture()
 def app() -> Generator[Flask, None, None]:
-    app = create_app()
+    app = applepyflask
     app.config.update(
         {
             "TESTING": True,

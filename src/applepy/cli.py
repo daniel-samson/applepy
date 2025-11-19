@@ -55,7 +55,7 @@ def run_command(args: argparse.Namespace) -> int:
         return 0
 
     if args.command == "flask":
-        from applepy.appleflask import app
+        from applepy.flask import app
 
         app.run()
         return 0
