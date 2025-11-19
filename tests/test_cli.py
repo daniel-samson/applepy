@@ -1,25 +1,36 @@
 from __future__ import annotations
 
-from contextlib import redirect_stdout
-from io import StringIO
-from typing import Sequence
-
-from applepy.cli import main
+from applepy.cli import make_parser
 
 
-def run_cli(args: Sequence[str]) -> str:
-    buf = StringIO()
-    with redirect_stdout(buf):
-        exit_code = main(args)
-    assert exit_code == 0
-    return buf.getvalue().strip()
+def test_flask_command_exists() -> None:
+    """Test that the flask command is registered."""
+    parser = make_parser()
+    args = parser.parse_args(["flask"])
+    assert args.command == "flask"
 
 
-def test_greet() -> None:
-    output = run_cli(["greet", "Alice"])
-    assert output == "Hello, Alice!"
+def test_db_migrate_command_exists() -> None:
+    """Test that the db:migrate command is registered."""
+    parser = make_parser()
+    args = parser.parse_args(["db:migrate"])
+    assert args.command == "db:migrate"
 
 
-def test_add() -> None:
-    output = run_cli(["add", "1", "2"])
-    assert output == "3"
+def test_migration_create_command_exists() -> None:
+    """Test that the migration:create command is registered."""
+    parser = make_parser()
+    args = parser.parse_args(["migration:create", "test migration"])
+    assert args.command == "migration:create"
+    assert args.message == "test migration"
+
+
+def test_parser_requires_command() -> None:
+    """Test that parser requires a command."""
+    parser = make_parser()
+    try:
+        parser.parse_args([])
+        raise AssertionError("Should have raised SystemExit")
+    except SystemExit:
+        # Expected behavior
+        pass
