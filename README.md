@@ -40,6 +40,8 @@ uv run applepy
 ### Run  web server
 
 ```sh
+docker compose up -d
+uv run applepy db:migrate
 uv run applepy flask
 ```
 
