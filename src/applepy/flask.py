@@ -7,6 +7,7 @@ from applepy.db import Base, db, engine
 from applepy.domains.offices.schemas import OfficeCreate, OfficeRecord
 from applepy.domains.offices.service import OfficeService
 from applepy.env import DATABASE_URL
+from applepy.exceptions import NotFoundException
 
 app = Flask("applepy")
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
@@ -45,6 +46,8 @@ def get_office(
         office_service = OfficeService(session)
         office = office_service.get_office_by_id(office_code)
         return {"office": office.model_dump()}
+    except NotFoundException as e:
+        return {"error": str(e)}, 404
     except Exception as e:
         return {"error": str(e)}, 500
     finally:
@@ -87,6 +90,8 @@ def update_office(
             return {"office": updated_office.model_dump()}
         finally:
             session.close()
+    except NotFoundException as e:
+        return {"error": str(e)}, 404
     except Exception as e:
         return {"error": str(e)}, 500
 
@@ -104,5 +109,7 @@ def delete_office(
             return {"message": "Office deleted"}
         finally:
             session.close()
+    except NotFoundException as e:
+        return {"error": str(e)}, 404
     except Exception as e:
         return {"error": str(e)}, 500
