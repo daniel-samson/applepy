@@ -3,8 +3,6 @@ from __future__ import annotations
 import argparse
 from typing import Sequence
 
-from applepy.appleflask import app
-
 
 def make_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -57,6 +55,8 @@ def run_command(args: argparse.Namespace) -> int:
         return 0
 
     if args.command == "flask":
+        from applepy.appleflask import app
+
         app.run()
         return 0
 
