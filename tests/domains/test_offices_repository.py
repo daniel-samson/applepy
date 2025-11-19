@@ -419,6 +419,7 @@ class TestOfficeRepositoryUpdate:
             territory=None,
         )
         repository.update(update_data)
+        session.commit()
 
         session.expunge_all()
         persisted = repository.get("NYC")
