@@ -5,11 +5,14 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-python@v3
+      - uses: actions/checkout@v5
+      - name: Install the latest version of uv and set the python version
+        uses: astral-sh/setup-uv@v7
         with:
-          python-version: "3.12"
-      - run: pip install uv
-      - run: uv sync
-      - run: uv run pytest
+          python-version: ${{ matrix.python-version }}
+      - name: Test with python ${{ matrix.python-version }}
+        run: uv run --frozen pytest
