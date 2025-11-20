@@ -37,14 +37,17 @@ def test_request_root(client: Client) -> None:
     response = client.get("/")
     assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/json"
-    assert response.json == {"message": "Hello, World!"}
+    assert response.json["message"] == "Hello, World!"  # type: ignore[index]
+    assert response.json["error"] is None  # type: ignore[index]
 
 
 def test_get_offices(client: Client) -> None:
     response = client.get("/offices")
     assert response.status_code == 200
     assert response.headers["Content-Type"] == "application/json"
-    assert "offices" in response.json  # type: ignore[operator]
+    assert "data" in response.json  # type: ignore[operator]
+    assert "items" in response.json["data"]  # type: ignore[index, operator]
+    assert "count" in response.json["data"]  # type: ignore[index, operator]
 
 
 def test_create_office(client: Client) -> None:
@@ -65,10 +68,10 @@ def test_create_office(client: Client) -> None:
     response = client.post(
         "/offices", json=office_data, content_type="application/json"
     )
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.headers["Content-Type"] == "application/json"
-    assert "office" in response.json  # type: ignore[operator]
-    assert response.json["office"]["city"] == office_data["city"]  # type: ignore[index]
+    assert "data" in response.json  # type: ignore[operator]
+    assert response.json["data"]["city"] == office_data["city"]  # type: ignore[index]
 
 
 def test_create_office_no_json(client: Client) -> None:

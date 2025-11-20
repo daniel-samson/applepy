@@ -29,6 +29,12 @@ def make_parser() -> argparse.ArgumentParser:
         help="Run database migrations.",
     )
 
+    # db:refresh command
+    subparsers.add_parser(
+        "db:refresh",
+        help="Refresh the database.",
+    )
+
     # migration:create
     migration_create = subparsers.add_parser(
         "migration:create",
@@ -59,6 +65,13 @@ def run_command(args: argparse.Namespace) -> int:
         # run `alembic revision --autogenerate -m {message}``
         subprocess.run(["alembic", "revision", "--autogenerate", "-m", message])
 
+        return 0
+
+    if args.command == "db:refresh":
+        # run alembic downgrade base
+        subprocess.run(["alembic", "downgrade", "base"])
+        # run alembic upgrade head
+        subprocess.run(["alembic", "upgrade", "head"])
         return 0
 
     # This should not happen because parser requires a command
