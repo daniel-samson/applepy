@@ -1,12 +1,13 @@
+from applepy.domains.employees.routes import EmployeeRoutes
+from applepy.domains.offices.routes import OfficeRoutes
 from applepy.factory import create_app
 from applepy.responses import ApiResponse, FlaskApiResponse
-from applepy.routes.offices import OfficeRoutes
 
 app = create_app()
 
-# Register CRUD route blueprints
-office_routes = OfficeRoutes()
-app.register_blueprint(office_routes.blueprint)
+# Register domain route blueprints
+app.register_blueprint(OfficeRoutes().blueprint)
+app.register_blueprint(EmployeeRoutes().blueprint)
 
 
 @app.route("/", methods=["GET"])

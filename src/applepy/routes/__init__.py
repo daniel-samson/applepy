@@ -1,4 +1,4 @@
-"""Flask routes for ApplePy API."""
+"""Base classes for route handling."""
 
 from applepy.routes.base import CrudRoutes
 
