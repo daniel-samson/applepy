@@ -3,7 +3,7 @@ name = "applepy"
 version = "0.1.0"
 description = "API for model cars shop"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "pytest",
     "pytest-cov",
