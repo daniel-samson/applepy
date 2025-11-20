@@ -1,4 +1,5 @@
-from collections.abc import Generator
+from collections.abc import Generator, Iterator
+from contextlib import contextmanager
 
 import pytest
 from flask import Flask
@@ -6,6 +7,7 @@ from sqlalchemy.orm import Session
 from werkzeug.test import Client
 
 from applepy import db as db_module
+from applepy import session as session_module
 from applepy.flask import app as applepyflask
 
 
@@ -33,11 +35,25 @@ class SessionProxy:
         pass
 
 
+@contextmanager
+def get_test_session(test_session: Session) -> Iterator[Session]:
+    """Context manager that yields the test session.
+
+    This mimics the behavior of get_session() but uses the test session
+    to ensure transaction rollback works in Flask tests.
+    """
+    try:
+        yield test_session
+    finally:
+        # Don't close the test session - it's managed by the fixture
+        pass
+
+
 @pytest.fixture()
 def app(db_session: Session) -> Generator[Flask, None, None]:
     """Flask app fixture with test database session.
 
-    Patches db.session to use the transactional test session,
+    Patches db.session and get_session() to use the transactional test session,
     ensuring all database changes are rolled back after each test.
     """
     app = applepyflask
@@ -51,10 +67,15 @@ def app(db_session: Session) -> Generator[Flask, None, None]:
     original_session = db_module.db.session
     db_module.db.session = SessionProxy(db_session)  # type: ignore[assignment]
 
+    # Patch get_session to use the test session instead of SessionLocal
+    original_get_session = session_module.get_session
+    session_module.get_session = lambda: get_test_session(db_session)  # type: ignore[assignment]
+
     yield app
 
-    # Restore original session
+    # Restore original functions
     db_module.db.session = original_session
+    session_module.get_session = original_get_session
 
 
 @pytest.fixture()
