@@ -1,23 +1,15 @@
 from typing import Any
 
-from flask import Flask, request
-from sqlalchemy.orm.session import Session
+from flask import request
 
-from applepy.db import Base, db, engine
 from applepy.domains.offices.schemas import OfficeCreate, OfficeRecord
 from applepy.domains.offices.service import OfficeService
-from applepy.env import DATABASE_URL
 from applepy.exceptions import NotFoundException
+from applepy.factory import create_app
 from applepy.responses import ApiResponse, ListResponse
+from applepy.session import get_session
 
-app = Flask("applepy")
-app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
-app.config["SQLALCHEMY_ECHO"] = True
-
-db.init_app(app)
-
-# Create tables immediately on module load
-Base.metadata.create_all(engine)
+app = create_app()
 
 
 @app.route("/", methods=["GET"])
@@ -28,40 +20,36 @@ def hello_world() -> tuple[dict[str, Any], int]:
 
 @app.route("/offices", methods=["GET"])
 def get_offices() -> tuple[dict[str, Any], int]:
-    session: Session = db.session()
     try:
-        office_service = OfficeService(session)
-        offices = office_service.get_all_offices()
-        list_response: ListResponse[OfficeRecord] = ListResponse(
-            items=list(offices), count=len(offices)
-        )
-        response: ApiResponse[ListResponse[OfficeRecord]] = ApiResponse(
-            data=list_response
-        )
-        return response.model_dump(), 200
+        with get_session() as session:
+            office_service = OfficeService(session)
+            offices = office_service.get_all_offices()
+            list_response: ListResponse[OfficeRecord] = ListResponse(
+                items=list(offices), count=len(offices)
+            )
+            response: ApiResponse[ListResponse[OfficeRecord]] = ApiResponse(
+                data=list_response
+            )
+            return response.model_dump(), 200
     except Exception as e:
         error_response: ApiResponse[None] = ApiResponse(error=str(e))
         return error_response.model_dump(), 500
-    finally:
-        session.close()
 
 
 @app.route("/offices/<office_code>", methods=["GET"])
 def get_office(office_code: str) -> tuple[dict[str, Any], int]:
-    session: Session = db.session()
     try:
-        office_service = OfficeService(session)
-        office = office_service.get_office_by_id(office_code)
-        response: ApiResponse[OfficeRecord] = ApiResponse(data=office)
-        return response.model_dump(), 200
+        with get_session() as session:
+            office_service = OfficeService(session)
+            office = office_service.get_office_by_id(office_code)
+            response: ApiResponse[OfficeRecord] = ApiResponse(data=office)
+            return response.model_dump(), 200
     except NotFoundException as e:
         error_response: ApiResponse[None] = ApiResponse(error=str(e))
         return error_response.model_dump(), 404
     except Exception as e:
         error_response = ApiResponse(error=str(e))
         return error_response.model_dump(), 500
-    finally:
-        session.close()
 
 
 @app.route("/offices", methods=["POST"])
@@ -74,15 +62,12 @@ def create_office() -> tuple[dict[str, Any], int]:
             )
             return error_response.model_dump(), 400
         office = OfficeCreate(**data)
-        session: Session = db.session()
-        try:
+        with get_session() as session:
             office_service = OfficeService(session)
             created_office = office_service.create_office(office)
             session.commit()
             response: ApiResponse[OfficeRecord] = ApiResponse(data=created_office)
             return response.model_dump(), 201
-        finally:
-            session.close()
     except Exception as e:
         error_response = ApiResponse(error=str(e))
         return error_response.model_dump(), 500
@@ -104,15 +89,12 @@ def update_office(office_code: str) -> tuple[dict[str, Any], int]:
                 error="office_code in URL must match office_code in request body"
             )
             return error_response.model_dump(), 400
-        session: Session = db.session()
-        try:
+        with get_session() as session:
             office_service = OfficeService(session)
             updated_office = office_service.update_office(office)
             session.commit()
             response: ApiResponse[OfficeRecord] = ApiResponse(data=updated_office)
             return response.model_dump(), 200
-        finally:
-            session.close()
     except NotFoundException as e:
         error_response = ApiResponse(error=str(e))
         return error_response.model_dump(), 404
@@ -124,8 +106,7 @@ def update_office(office_code: str) -> tuple[dict[str, Any], int]:
 @app.route("/offices/<office_code>", methods=["DELETE"])
 def delete_office(office_code: str) -> tuple[dict[str, Any], int]:
     try:
-        session: Session = db.session()
-        try:
+        with get_session() as session:
             office_service = OfficeService(session)
             office_service.delete_office_by_id(office_code)
             session.commit()
@@ -133,8 +114,6 @@ def delete_office(office_code: str) -> tuple[dict[str, Any], int]:
                 message="Office deleted successfully"
             )
             return response.model_dump(), 204
-        finally:
-            session.close()
     except NotFoundException as e:
         error_response: ApiResponse[None] = ApiResponse(error=str(e))
         return error_response.model_dump(), 404
