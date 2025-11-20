@@ -98,6 +98,12 @@ def update_office(office_code: str) -> tuple[dict[str, Any], int]:
             )
             return error_response.model_dump(), 400
         office = OfficeRecord(**data)
+        # Validate that office_code in URL matches office_code in body
+        if office.office_code != office_code:
+            error_response = ApiResponse(
+                error="office_code in URL must match office_code in request body"
+            )
+            return error_response.model_dump(), 400
         session: Session = db.session()
         try:
             office_service = OfficeService(session)
