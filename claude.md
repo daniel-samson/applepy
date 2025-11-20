@@ -274,16 +274,48 @@ If a hook fails:
 ### Starting Development
 
 ```bash
-# Install dependencies
+# 1. Install dependencies
 make sync
 
-# Install pre-commit hooks
+# 2. Configure environment variables
+cp .env.example .env
+# Edit .env with your database configuration if needed
+
+# 3. Start database (if not already running)
+docker compose up -d
+
+# 4. Run database migrations
+uv run applepy db:migrate
+
+# 5. Install pre-commit hooks
 make pre-commit
 
-# Run all checks to ensure environment is ready
+# 6. Run all checks to ensure environment is ready
 make check
 make test
 ```
+
+### Environment Configuration
+
+The project uses environment variables for configuration. For local development:
+
+**Copy the example environment file:**
+```bash
+cp .env.example .env
+```
+
+**Available environment variables:**
+- `DATABASE_URL`: Database connection string (defaults to MySQL in .env.example)
+- `TESTING`: Set to `true` when running tests (pytest.ini handles this automatically)
+
+**Running the application:**
+```bash
+uv run applepy flask
+# Server starts at http://localhost:5000
+```
+
+**If DATABASE_URL is not set:**
+The application will display a helpful error message with setup instructions.
 
 ### During Development
 

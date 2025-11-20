@@ -2,7 +2,19 @@ from __future__ import annotations
 
 import argparse
 import subprocess
+from pathlib import Path
 from typing import Sequence
+
+# Load environment variables from .env file if it exists
+try:
+    from dotenv import load_dotenv
+
+    env_file = Path.cwd() / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
+except ImportError:
+    # python-dotenv is optional (dev dependency)
+    pass
 
 
 def make_parser() -> argparse.ArgumentParser:
