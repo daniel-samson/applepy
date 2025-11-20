@@ -2,13 +2,44 @@ from collections.abc import Generator
 
 import pytest
 from flask import Flask
+from sqlalchemy.orm import Session
 from werkzeug.test import Client
 
+from applepy import db as db_module
 from applepy.flask import app as applepyflask
 
 
+class SessionProxy:
+    """Proxy object that wraps a test session for Flask-SQLAlchemy compatibility.
+
+    This allows Flask-SQLAlchemy's teardown logic to work while using our
+    transactional test session.
+    """
+
+    def __init__(self, session: Session):
+        self._session = session
+
+    def __call__(self) -> Session:
+        """Allow this proxy to be called like db.session()."""
+        return self._session
+
+    def __getattr__(self, name: str) -> object:
+        """Delegate attribute access to the wrapped session."""
+        return getattr(self._session, name)
+
+    def remove(self) -> None:
+        """No-op remove() to satisfy Flask-SQLAlchemy's teardown."""
+        # Don't actually remove the session since it's managed by the fixture
+        pass
+
+
 @pytest.fixture()
-def app() -> Generator[Flask, None, None]:
+def app(db_session: Session) -> Generator[Flask, None, None]:
+    """Flask app fixture with test database session.
+
+    Patches db.session to use the transactional test session,
+    ensuring all database changes are rolled back after each test.
+    """
     app = applepyflask
     app.config.update(
         {
@@ -16,11 +47,14 @@ def app() -> Generator[Flask, None, None]:
         }
     )
 
-    # other setup can go here
+    # Patch db.session with our test session proxy
+    original_session = db_module.db.session
+    db_module.db.session = SessionProxy(db_session)  # type: ignore[assignment]
 
     yield app
 
-    # clean up / reset resources here
+    # Restore original session
+    db_module.db.session = original_session
 
 
 @pytest.fixture()
