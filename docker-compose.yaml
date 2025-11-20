@@ -1,8 +1,12 @@
 # Use root/example as user/password credentials
+# Services:
+# - db: Development database (applepy)
+# - db_test: Test database (applepy_test) - optional, used when TESTING=true
 
 services:
   db:
     image: mariadb
+    container_name: applepy_db
     restart: always
     volumes:
       - db_data:/var/lib/mysql
@@ -11,12 +15,39 @@ services:
       MARIADB_DATABASE: applepy
     ports:
       - 3306:3306
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  db_test:
+    image: mariadb
+    container_name: applepy_db_test
+    restart: always
+    volumes:
+      - db_test_data:/var/lib/mysql
+    environment:
+      MARIADB_ROOT_PASSWORD: example
+      MARIADB_DATABASE: applepy_test
+    ports:
+      - 3307:3306
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   adminer:
     image: adminer
+    container_name: applepy_adminer
     restart: always
     ports:
       - 8080:8080
+    depends_on:
+      - db
+      - db_test
 
 volumes:
   db_data:
+  db_test_data:

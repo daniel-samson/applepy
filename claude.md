@@ -320,28 +320,49 @@ The application will display a helpful error message with setup instructions.
 
 ### Test Database Isolation
 
-By default, tests use the development database with transaction rollback for isolation. For complete database separation:
+Tests support multiple isolation strategies:
 
-**Option 1: Use separate test database (Recommended for CI)**
+**Strategy 1: Transaction Rollback (Default)**
+Tests use the development database with automatic transaction rollback:
 ```bash
-# Create test database
-mysql -u root -p -e "CREATE DATABASE applepy_test;"
-
-# Run tests with separate test database
-TESTING=true TEST_DATABASE_URL=mysql+pymysql://root:password@localhost/applepy_test make test
+make test
 ```
 
-**Option 2: Let test database name be derived automatically**
+Pros:
+- No additional setup required
+- Fast iteration
+- Works immediately
+- Prevents test data pollution
+
+**Strategy 2: Separate Test Database (Recommended)**
+When using `docker compose up -d`, both databases are available:
 ```bash
-# Tests will automatically use applepy_test if TESTING=true
+# Development database: applepy (port 3306)
+# Test database: applepy_test (port 3307)
+
+# Run tests with complete isolation
 TESTING=true make test
 ```
 
-**Local Development:**
-By default, tests use the development database with automatic transaction rollback, providing test isolation without database setup.
+This automatically uses the `applepy_test` database service.
+
+**Strategy 3: Custom Test Database**
+For non-Docker setups, explicitly specify the test database:
+```bash
+TESTING=true TEST_DATABASE_URL=mysql+pymysql://user:pass@localhost/applepy_test make test
+```
+
+**Docker Compose Services:**
+The `docker-compose.yaml` includes:
+```yaml
+services:
+  db:           # Development database (applepy) on port 3306
+  db_test:      # Test database (applepy_test) on port 3307
+  adminer:      # Web database manager on http://localhost:8080
+```
 
 **GitHub Actions:**
-CI/CD automatically sets `TESTING=true` and `TEST_DATABASE_URL` to use a separate test database service, ensuring tests don't affect development database.
+CI/CD automatically sets `TESTING=true` and `TEST_DATABASE_URL` to use a separate test database container, ensuring tests don't affect development data.
 
 ### During Development
 

@@ -43,8 +43,13 @@ cp .env.example .env
 ### 4. Start Database
 
 ```sh
-# Start MariaDB/MySQL via Docker
+# Start MariaDB/MySQL via Docker (includes both development and test databases)
 docker compose up -d
+
+# This starts:
+# - db: Development database (applepy) on port 3306
+# - db_test: Test database (applepy_test) on port 3307
+# - adminer: Web interface for database management on http://localhost:8080
 
 # Run database migrations
 uv run applepy db:migrate
@@ -61,24 +66,30 @@ uv run applepy flask
 
 ### Running Tests
 
-By default, tests use the development database with transaction rollback for isolation:
+**Option 1: Default (Transaction Isolation)**
+Tests use the development database with automatic transaction rollback:
 
 ```sh
-# Run tests (uses development database with transaction isolation)
 make test
 ```
 
-For complete database separation (optional):
+Benefits:
+- No additional setup needed
+- Fast iteration
+- Transaction rollback prevents test pollution
+
+**Option 2: Separate Test Database (Complete Isolation)**
+If you started `docker compose up -d`, the test database (`applepy_test`) is already available:
 
 ```sh
-# Option 1: Create separate test database
-mysql -u root -p -e "CREATE DATABASE applepy_test;"
-
-# Option 2: Run tests with test database isolation
+# Run tests with complete database isolation
 TESTING=true make test
 ```
 
-**GitHub Actions** automatically runs tests with a separate test database service to ensure CI tests don't affect development data.
+This uses the separate test database service running on port 3307.
+
+**GitHub Actions**
+Tests automatically use a separate test database service to ensure CI tests don't affect development data.
 
 ### Other Useful Commands
 
