@@ -4,6 +4,9 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 
 from applepy.db import Base
+from applepy.domains.customers.models import Customer  # noqa: F401
+from applepy.domains.employees.models import Employee  # noqa: F401
+from applepy.domains.offices.models import Office  # noqa: F401
 from applepy.env import DATABASE_URL
 
 # this is the Alembic Config object, which provides
