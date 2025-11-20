@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from werkzeug.test import Client
 
 from applepy import db as db_module
-from applepy import session as session_module
 from applepy.flask import app as applepyflask
 
 
@@ -67,15 +66,18 @@ def app(db_session: Session) -> Generator[Flask, None, None]:
     original_session = db_module.db.session
     db_module.db.session = SessionProxy(db_session)  # type: ignore[assignment]
 
-    # Patch get_session to use the test session instead of SessionLocal
-    original_get_session = session_module.get_session
-    session_module.get_session = lambda: get_test_session(db_session)  # type: ignore[assignment]
+    # Patch get_session in the flask module where it's imported
+    # This must be patched where get_session is USED, not where it's defined
+    import applepy.flask as flask_module
+
+    original_get_session = flask_module.get_session
+    flask_module.get_session = lambda: get_test_session(db_session)  # type: ignore[assignment]
 
     yield app
 
     # Restore original functions
     db_module.db.session = original_session
-    session_module.get_session = original_get_session
+    flask_module.get_session = original_get_session
 
 
 @pytest.fixture()
