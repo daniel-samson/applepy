@@ -21,7 +21,7 @@ def get_offices() -> FlaskApiResponse:
     try:
         with get_session() as session:
             office_service = OfficeService(session)
-            offices = office_service.get_all_offices()
+            offices = office_service.get_all()
             list_response: ListResponse[OfficeRecord] = ListResponse(
                 items=list(offices), count=len(offices)
             )
@@ -39,7 +39,7 @@ def get_office(office_code: str) -> FlaskApiResponse:
     try:
         with get_session() as session:
             office_service = OfficeService(session)
-            office = office_service.get_office_by_id(office_code)
+            office = office_service.get_by_id(office_code)
             response: ApiResponse[OfficeRecord] = ApiResponse(data=office)
             return response.model_dump(), 200
     except NotFoundException as e:
@@ -62,7 +62,7 @@ def create_office() -> FlaskApiResponse:
         office = OfficeCreate(**data)
         with get_session() as session:
             office_service = OfficeService(session)
-            created_office = office_service.create_office(office)
+            created_office = office_service.create(office)
             session.commit()
             response: ApiResponse[OfficeRecord] = ApiResponse(data=created_office)
             return response.model_dump(), 201
@@ -89,7 +89,7 @@ def update_office(office_code: str) -> FlaskApiResponse:
             return error_response.model_dump(), 400
         with get_session() as session:
             office_service = OfficeService(session)
-            updated_office = office_service.update_office(office)
+            updated_office = office_service.update(office)
             session.commit()
             response: ApiResponse[OfficeRecord] = ApiResponse(data=updated_office)
             return response.model_dump(), 200
@@ -106,7 +106,7 @@ def delete_office(office_code: str) -> FlaskApiResponse:
     try:
         with get_session() as session:
             office_service = OfficeService(session)
-            office_service.delete_office_by_id(office_code)
+            office_service.delete_by_id(office_code)
             session.commit()
             response: ApiResponse[None] = ApiResponse(
                 message="Office deleted successfully"
