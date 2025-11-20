@@ -11,7 +11,7 @@ class OfficeService(BaseService[Office, str, OfficeCreate, OfficeRecord]):
     """Business logic for office operations.
 
     Inherits generic CRUD operations from BaseService, providing domain-specific
-    method names and additional convenience methods for office management.
+    method names for semantic clarity in the business logic layer.
     """
 
     def __init__(self, session: Session) -> None:
@@ -32,7 +32,7 @@ class OfficeService(BaseService[Office, str, OfficeCreate, OfficeRecord]):
         return self.get_all()
 
     def get_office_by_id(self, office_code: str) -> OfficeRecord:
-        """Get an office by its code.
+        """Get an office by code.
 
         Args:
             office_code: The office code
@@ -70,19 +70,8 @@ class OfficeService(BaseService[Office, str, OfficeCreate, OfficeRecord]):
         """
         return self.update(data)
 
-    def delete_office(self, data: OfficeRecord) -> None:
-        """Delete an office by record.
-
-        Args:
-            data: Office record to delete
-
-        Raises:
-            NotFoundException: If office not found
-        """
-        self.delete_office_by_id(data.office_code)
-
     def delete_office_by_id(self, office_code: str) -> None:
-        """Delete an office by its code.
+        """Delete an office by code.
 
         Args:
             office_code: The office code to delete

@@ -376,18 +376,7 @@ class TestOfficeServiceUpdateOffice:
 
 
 class TestOfficeServiceDeleteOffice:
-    """Tests for the delete_office() and delete_office_by_id() methods."""
-
-    def test_delete_office_calls_delete_office_by_id(
-        self,
-        office_service: OfficeService,
-        sample_office_record: OfficeRecord,
-    ) -> None:
-        """Test delete_office calls delete_office_by_id."""
-        with patch.object(office_service, "delete_office_by_id") as mock_delete_by_id:
-            office_service.delete_office(sample_office_record)
-
-            mock_delete_by_id.assert_called_once_with("NYC")
+    """Tests for the delete_office_by_id() method."""
 
     def test_delete_office_by_id_calls_repository(
         self, office_service: OfficeService
@@ -395,17 +384,6 @@ class TestOfficeServiceDeleteOffice:
         """Test delete_office_by_id calls repository delete method."""
         with patch.object(office_service.repo, "delete") as mock_delete:
             office_service.delete_office_by_id("NYC")
-
-            mock_delete.assert_called_once_with("NYC")
-
-    def test_delete_office_with_office_record(
-        self,
-        office_service: OfficeService,
-        sample_office_record: OfficeRecord,
-    ) -> None:
-        """Test delete_office with OfficeRecord."""
-        with patch.object(office_service.repo, "delete") as mock_delete:
-            office_service.delete_office(sample_office_record)
 
             mock_delete.assert_called_once_with("NYC")
 

@@ -9,8 +9,7 @@ from .schemas import OfficeCreate, OfficeRecord
 class OfficeRepository(BaseRepository[Office, str, OfficeCreate, OfficeRecord]):
     """Office repository for CRUD operations on Office entities.
 
-    Inherits generic CRUD operations from BaseRepository, providing specialized
-    implementations only where needed for Office-specific behavior.
+    Inherits all CRUD operations from BaseRepository.
     """
 
     def __init__(self, session: Session) -> None:

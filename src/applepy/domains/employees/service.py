@@ -8,10 +8,10 @@ from .schemas import EmployeeCreate, EmployeeRecord
 
 
 class EmployeeService(BaseService[Employee, int, EmployeeCreate, EmployeeRecord]):
-    """Business logic and validation for employee operations.
+    """Business logic for employee operations.
 
     Inherits generic CRUD operations from BaseService, providing domain-specific
-    method names and additional convenience methods for employee management.
+    method names for semantic clarity in the business logic layer.
     """
 
     def __init__(self, session: Session) -> None:
@@ -32,7 +32,7 @@ class EmployeeService(BaseService[Employee, int, EmployeeCreate, EmployeeRecord]
         return self.get_all()
 
     def get_employee_by_id(self, employee_number: int) -> EmployeeRecord:
-        """Get an employee by ID.
+        """Get an employee by number.
 
         Args:
             employee_number: The employee number
@@ -70,8 +70,8 @@ class EmployeeService(BaseService[Employee, int, EmployeeCreate, EmployeeRecord]
         """
         return self.update(data)
 
-    def delete_employee(self, employee_number: int) -> None:
-        """Delete an employee by ID.
+    def delete_employee_by_id(self, employee_number: int) -> None:
+        """Delete an employee by number.
 
         Args:
             employee_number: The employee number to delete
