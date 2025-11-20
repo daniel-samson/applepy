@@ -12,7 +12,7 @@ class Base(DeclarativeBase):
 db = SQLAlchemy(model_class=Base)
 
 engine = create_engine(
-    DATABASE_URL,
+    DATABASE_URL,  # type: ignore[arg-type]
     echo=False,
     pool_pre_ping=True,  # important for MySQL timeouts
     pool_recycle=3600,  # avoids stale pooled connections

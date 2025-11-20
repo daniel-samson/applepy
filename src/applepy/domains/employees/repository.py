@@ -1,70 +1,91 @@
 from sqlalchemy.orm import Session
 
-from applepy.exceptions import NotFoundException
+from applepy.repositories.base import BaseRepository
 
 from .models import Employee
 from .schemas import EmployeeCreate, EmployeeRecord
 
 
-class EmployeeRepository:
-    """Employee repository. Takes pydantic models and returns SQLAlchemy db models"""
+class EmployeeRepository(BaseRepository[Employee, int, EmployeeCreate, EmployeeRecord]):
+    """Employee repository for CRUD operations on Employee entities.
 
-    def __init__(self, db_session: Session):
-        self.session = db_session
+    Inherits generic CRUD operations from BaseRepository, providing specialized
+    implementations only where needed for Employee-specific behavior.
+    """
+
+    def __init__(self, session: Session) -> None:
+        """Initialize the Employee repository.
+
+        Args:
+            session: SQLAlchemy session for database operations
+        """
+        super().__init__(session, Employee, "employee_number")
 
     def get_all_employees(self) -> list[Employee]:
-        return self.session.query(Employee).all()
+        """Get all employees.
 
-    def create_employee(self, data: EmployeeCreate) -> Employee:
-        employee = Employee(
-            first_name=data.first_name,
-            last_name=data.last_name,
-            email=data.email,
-            job_title=data.job_title,
-            office_code=data.office_code,
-            reports_to=data.reports_to,
-        )
-        self.session.add(employee)
-        return employee
+        Returns:
+            List of all employee records
+        """
+        return self.all()
 
     def get_employee_by_id(self, employee_number: int) -> Employee:
-        employee = (
-            self.session.query(Employee)
-            .filter(Employee.employee_number == employee_number)
-            .first()
-        )
-        if not employee:
-            raise NotFoundException(f"Employee with number {employee_number} not found")
+        """Get an employee by ID.
 
-        return employee
+        Args:
+            employee_number: The employee number
+
+        Returns:
+            The employee record
+
+        Raises:
+            NotFoundException: If employee not found
+        """
+        return self.get(employee_number)
+
+    def create_employee(self, data: EmployeeCreate) -> Employee:
+        """Create a new employee.
+
+        Args:
+            data: Employee creation data
+
+        Returns:
+            The created employee record
+        """
+        return self.create(data)
 
     def update_employee(self, data: EmployeeRecord) -> Employee:
-        employee = (
-            self.session.query(Employee)
-            .filter(Employee.employee_number == data.employee_number)
-            .first()
-        )
-        if not employee:
-            raise NotFoundException(
-                f"Employee with number {data.employee_number} not found"
-            )
+        """Update an existing employee.
 
-        update_data = data.model_dump(exclude_unset=True)
-        for key, value in update_data.items():
-            setattr(employee, key, value)
+        Args:
+            data: Employee record with updated data
 
-        return employee
+        Returns:
+            The updated employee record
+
+        Raises:
+            NotFoundException: If employee not found
+        """
+        return self.update(data)
 
     def delete_employee(self, employee: EmployeeRecord) -> None:
+        """Delete an employee by record.
+
+        Args:
+            employee: Employee record to delete
+
+        Raises:
+            NotFoundException: If employee not found
+        """
         self.delete_employee_by_id(employee.employee_number)
 
     def delete_employee_by_id(self, employee_number: int) -> None:
-        employee = (
-            self.session.query(Employee)
-            .filter(Employee.employee_number == employee_number)
-            .first()
-        )
-        if not employee:
-            raise NotFoundException(f"Employee with number {employee_number} not found")
+        """Delete an employee by ID.
 
-        self.session.delete(employee)
+        Args:
+            employee_number: The employee number to delete
+
+        Raises:
+            NotFoundException: If employee not found
+        """
+        self.delete(employee_number)

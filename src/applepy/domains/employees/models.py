@@ -1,5 +1,3 @@
-from typing import List
-
 from sqlalchemy import (
     Column,
     ForeignKey,
@@ -28,7 +26,7 @@ class Employee(Base):
     manager: Mapped["Employee"] = relationship(
         "Employee", remote_side=[employee_number]
     )
-    direct_reports: Mapped[List["Employee"]] = relationship(
+    direct_reports: Mapped[list["Employee"]] = relationship(
         "Employee", back_populates="manager"
     )
 
