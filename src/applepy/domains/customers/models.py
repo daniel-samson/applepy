@@ -1,9 +1,12 @@
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
-from sqlalchemy import Numeric, String
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import ForeignKey, Numeric, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from applepy.db import Base
+
+if TYPE_CHECKING:
+    from applepy.domains.employees.models import Employee
 
 
 class Customer(Base):
@@ -29,8 +32,9 @@ class Customer(Base):
     )
     country: Mapped[str] = mapped_column(String(50), nullable=False)
     sales_rep_employee_number: Mapped[Optional[int]] = mapped_column(
-        nullable=True, default=None
+        ForeignKey("employees.employee_number"), nullable=True, default=None
     )
+    sales_rep: Mapped[Optional["Employee"]] = relationship("Employee")
     credit_limit: Mapped[Optional[float]] = mapped_column(
         Numeric(10, 2), nullable=True, default=None
     )
