@@ -41,9 +41,11 @@ if not DATABASE_URL:
         )
 
 # Test database configuration
-# When testing, use a separate test database for isolation
+# When testing, we use transaction rollback isolation with the development database.
+# The TEST_DATABASE_URL is available but not used - it's here for reference or
+# future use cases where a separate test database might be desired.
 if _is_testing:
-    # Check if TEST_DATABASE_URL is explicitly set
+    # Check if TEST_DATABASE_URL is explicitly set in environment
     TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 
     if not TEST_DATABASE_URL:
@@ -63,5 +65,5 @@ if _is_testing:
             # Fallback: just append _test to the URL
             TEST_DATABASE_URL = DATABASE_URL + "_test"
 
-    # Use test database URL for testing
-    DATABASE_URL = TEST_DATABASE_URL
+    # Note: DATABASE_URL is NOT overridden with TEST_DATABASE_URL
+    # Tests use transaction rollback isolation with the development database
