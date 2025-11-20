@@ -1,10 +1,12 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class OfficeBase(BaseModel):
     """Validates office data"""
+
+    model_config = ConfigDict(from_attributes=True)
 
     address_line_1: Optional[str]
     address_line_2: Optional[str]
@@ -26,7 +28,3 @@ class OfficeRecord(OfficeBase):
     """Validates existing office data on read"""
 
     office_code: str
-
-    model_config = {
-        "from_attributes": True,
-    }

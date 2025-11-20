@@ -83,11 +83,12 @@ class BaseRepository(Generic[T, K, CreateSchemaT, RecordSchemaT]):
             data: Pydantic schema instance with field values
 
         Returns:
-            The newly created model instance (not yet committed)
+            The newly created model instance with auto-generated fields populated
         """
         # Convert pydantic schema to dict and create model instance
         entity = self.model_class(**data.model_dump())
         self.session.add(entity)
+        self.session.flush()  # Flush to populate auto-increment fields
         return entity
 
     def update(self, data: RecordSchemaT) -> T:

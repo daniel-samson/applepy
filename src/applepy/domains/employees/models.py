@@ -1,3 +1,5 @@
+from typing import Optional
+
 from sqlalchemy import (
     Column,
     ForeignKey,
@@ -20,10 +22,14 @@ class Employee(Base):
     first_name = Column(String(50), nullable=False)
     email = Column(String(100), nullable=False)
     job_title = Column(String(50), nullable=False)
-    office_code: Mapped[str] = mapped_column(ForeignKey("offices.office_code"))
-    office: Mapped["Office"] = relationship(Office)
-    reports_to: Mapped[int] = mapped_column(ForeignKey("employees.employee_number"))
-    manager: Mapped["Employee"] = relationship(
+    office_code: Mapped[Optional[str]] = mapped_column(
+        ForeignKey("offices.office_code"), nullable=True
+    )
+    office: Mapped[Optional["Office"]] = relationship(Office)
+    reports_to: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("employees.employee_number"), nullable=True
+    )
+    manager: Mapped[Optional["Employee"]] = relationship(
         "Employee", remote_side=[employee_number]
     )
     direct_reports: Mapped[list["Employee"]] = relationship(

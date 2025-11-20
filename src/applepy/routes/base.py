@@ -197,7 +197,8 @@ class CrudRoutes(Generic[CreateSchemaT, RecordSchemaT, K]):
 
             # Validate that ID in URL matches ID in body
             id_in_body = getattr(record_data, self.id_param_name, None)
-            if id_in_body != id_value:
+            # Convert both to strings for comparison since URL params are always strings
+            if str(id_in_body) != str(id_value):
                 error_response = ApiResponse(
                     error=f"{self.id_param_name} in URL must match "
                     f"{self.id_param_name} in request body"
