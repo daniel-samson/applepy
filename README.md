@@ -59,12 +59,30 @@ uv run applepy flask
 # Server will be available at http://localhost:5000
 ```
 
+### Running Tests
+
+By default, tests use the development database with transaction rollback for isolation:
+
+```sh
+# Run tests (uses development database with transaction isolation)
+make test
+```
+
+For complete database separation (optional):
+
+```sh
+# Option 1: Create separate test database
+mysql -u root -p -e "CREATE DATABASE applepy_test;"
+
+# Option 2: Run tests with test database isolation
+TESTING=true make test
+```
+
+**GitHub Actions** automatically runs tests with a separate test database service to ensure CI tests don't affect development data.
+
 ### Other Useful Commands
 
 ```sh
-# Run tests
-make test
-
 # Run type checking and linting
 make check
 

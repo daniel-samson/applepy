@@ -306,7 +306,8 @@ cp .env.example .env
 
 **Available environment variables:**
 - `DATABASE_URL`: Database connection string (defaults to MySQL in .env.example)
-- `TESTING`: Set to `true` when running tests (pytest.ini handles this automatically)
+- `TEST_DATABASE_URL`: (Optional) Separate test database connection string
+- `TESTING`: Set to `true` to use test database isolation
 
 **Running the application:**
 ```bash
@@ -316,6 +317,31 @@ uv run applepy flask
 
 **If DATABASE_URL is not set:**
 The application will display a helpful error message with setup instructions.
+
+### Test Database Isolation
+
+By default, tests use the development database with transaction rollback for isolation. For complete database separation:
+
+**Option 1: Use separate test database (Recommended for CI)**
+```bash
+# Create test database
+mysql -u root -p -e "CREATE DATABASE applepy_test;"
+
+# Run tests with separate test database
+TESTING=true TEST_DATABASE_URL=mysql+pymysql://root:password@localhost/applepy_test make test
+```
+
+**Option 2: Let test database name be derived automatically**
+```bash
+# Tests will automatically use applepy_test if TESTING=true
+TESTING=true make test
+```
+
+**Local Development:**
+By default, tests use the development database with automatic transaction rollback, providing test isolation without database setup.
+
+**GitHub Actions:**
+CI/CD automatically sets `TESTING=true` and `TEST_DATABASE_URL` to use a separate test database service, ensuring tests don't affect development database.
 
 ### During Development
 

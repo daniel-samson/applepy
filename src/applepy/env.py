@@ -1,4 +1,5 @@
 import os
+import re
 from pathlib import Path
 
 # Load .env file from project root if it exists
@@ -38,3 +39,29 @@ if not DATABASE_URL:
             "- PostgreSQL: postgresql://user:password@localhost/database\n"
             "- SQLite: sqlite:///./test.db\n"
         )
+
+# Test database configuration
+# When testing, use a separate test database for isolation
+if _is_testing:
+    # Check if TEST_DATABASE_URL is explicitly set
+    TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
+
+    if not TEST_DATABASE_URL:
+        # Derive test database name from DATABASE_URL by appending '_test'
+        # This works for both MySQL and PostgreSQL
+        # For MySQL: mysql+pymysql://user:pass@host/dbname?charset=utf8mb4
+        #        -> mysql+pymysql://user:pass@host/dbname_test?charset=utf8mb4
+        match = re.search(r"(/[^/?]+)(\?.*)?$", DATABASE_URL)
+        if match:
+            database_name = match.group(1)
+            query_string = match.group(2) or ""
+            TEST_DATABASE_URL = DATABASE_URL.replace(
+                database_name + query_string,
+                database_name + "_test" + query_string,
+            )
+        else:
+            # Fallback: just append _test to the URL
+            TEST_DATABASE_URL = DATABASE_URL + "_test"
+
+    # Use test database URL for testing
+    DATABASE_URL = TEST_DATABASE_URL
