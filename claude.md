@@ -7,7 +7,7 @@ This document provides guidelines for Claude Code when working on the ApplePy pr
 **ApplePy** is a Python API for a model cars shop. It's a modern Python package with strict type checking, comprehensive testing, and automated code quality checks.
 
 - **Version:** 0.1.0
-- **Python Version:** >=3.9 (targets 3.11)
+- **Python Version:** >=3.10 (targets 3.11)
 - **Package Entry Point:** `applepy = "applepy.cli:main"`
 - **License:** MIT
 
