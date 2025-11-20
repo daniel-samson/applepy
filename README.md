@@ -66,7 +66,7 @@ uv run applepy flask
 
 ### Running Tests
 
-**Option 1: Default (Transaction Isolation)**
+**Default: Transaction Rollback Isolation (Recommended)**
 Tests use the development database with automatic transaction rollback:
 
 ```sh
@@ -74,22 +74,31 @@ make test
 ```
 
 Benefits:
-- No additional setup needed
-- Fast iteration
-- Transaction rollback prevents test pollution
+- ✅ No additional setup needed
+- ✅ Fastest test execution
+- ✅ Complete test isolation via transaction rollback
+- ✅ No test data persists to development database
+- ✅ Works with `docker compose up -d`
 
-**Option 2: Separate Test Database (Complete Isolation)**
-If you started `docker compose up -d`, the test database (`applepy_test`) is already available:
+How it works:
+1. Each test runs within a database transaction
+2. All changes (inserts, updates, deletes) happen in the transaction
+3. At the end of each test, the transaction is rolled back
+4. Development database is restored to its original state
+5. Zero test data pollution
+
+**Separate Test Database (Optional - Manual Testing)**
+If you want to use the separate test database for manual testing:
 
 ```sh
-# Run tests with complete database isolation
-TESTING=true make test
+# The db_test service runs on port 3307 with applepy_test database
+# Access via: mysql -h localhost -P 3307 -u root -p
+
+# Inspect via Adminer: http://localhost:8080
 ```
 
-This uses the separate test database service running on port 3307.
-
-**GitHub Actions**
-Tests automatically use a separate test database service to ensure CI tests don't affect development data.
+**GitHub Actions CI**
+Automatically uses a separate test database service to mirror production-like environment and prevent any CI data from affecting development database.
 
 ### Other Useful Commands
 

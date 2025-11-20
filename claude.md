@@ -320,49 +320,51 @@ The application will display a helpful error message with setup instructions.
 
 ### Test Database Isolation
 
-Tests support multiple isolation strategies:
+**Default Strategy: Transaction Rollback (Recommended)**
 
-**Strategy 1: Transaction Rollback (Default)**
 Tests use the development database with automatic transaction rollback:
 ```bash
 make test
 ```
 
-Pros:
-- No additional setup required
-- Fast iteration
-- Works immediately
-- Prevents test data pollution
+**How Transaction Rollback Isolation Works:**
+1. conftest.py creates a database connection with an open transaction
+2. Creates a savepoint within that transaction
+3. Each test runs all database operations within this savepoint
+4. After test completes, the savepoint is rolled back
+5. All changes (inserts, updates, deletes) are undone
+6. Development database returns to original state
+7. Next test starts with clean database state
 
-**Strategy 2: Separate Test Database (Recommended)**
-When using `docker compose up -d`, both databases are available:
-```bash
-# Development database: applepy (port 3306)
-# Test database: applepy_test (port 3307)
+**Benefits:**
+- ✅ No additional database setup required
+- ✅ Fastest test execution (no disk I/O to separate DB)
+- ✅ Complete isolation despite using same database
+- ✅ Zero test data pollution
+- ✅ Works immediately after `docker compose up -d`
 
-# Run tests with complete isolation
-TESTING=true make test
-```
-
-This automatically uses the `applepy_test` database service.
-
-**Strategy 3: Custom Test Database**
-For non-Docker setups, explicitly specify the test database:
-```bash
-TESTING=true TEST_DATABASE_URL=mysql+pymysql://user:pass@localhost/applepy_test make test
-```
-
-**Docker Compose Services:**
-The `docker-compose.yaml` includes:
+**GitHub Actions (CI/CD):**
+For CI/CD, tests use a separate test database service:
 ```yaml
-services:
-  db:           # Development database (applepy) on port 3306
-  db_test:      # Test database (applepy_test) on port 3307
-  adminer:      # Web database manager on http://localhost:8080
+env:
+  DATABASE_URL: mysql+pymysql://root:example@localhost/applepy?charset=utf8mb4
+  TEST_DATABASE_URL: mysql+pymysql://root:example@localhost/applepy_test?charset=utf8mb4
+  TESTING: "true"
 ```
 
-**GitHub Actions:**
-CI/CD automatically sets `TESTING=true` and `TEST_DATABASE_URL` to use a separate test database container, ensuring tests don't affect development data.
+This mirrors production environment and ensures no CI data affects development.
+
+**Optional: Separate Test Database for Manual Testing**
+
+Docker Compose includes test database service for manual testing:
+```bash
+# Access test database directly
+mysql -h localhost -P 3307 -u root -pexample applepy_test
+
+# Or use Adminer web UI
+# Visit http://localhost:8080
+# System: MySQL, Server: localhost:3307, Username: root, Password: example
+```
 
 ### During Development
 
