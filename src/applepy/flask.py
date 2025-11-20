@@ -1,120 +1,15 @@
-from flask import request
-
-from applepy.domains.offices.schemas import OfficeCreate, OfficeRecord
-from applepy.domains.offices.service import OfficeService
-from applepy.exceptions import NotFoundException
 from applepy.factory import create_app
-from applepy.responses import ApiResponse, FlaskApiResponse, ListResponse
-from applepy.session import get_session
+from applepy.responses import ApiResponse, FlaskApiResponse
+from applepy.routes.offices import OfficeRoutes
 
 app = create_app()
+
+# Register CRUD route blueprints
+office_routes = OfficeRoutes()
+app.register_blueprint(office_routes.blueprint)
 
 
 @app.route("/", methods=["GET"])
 def hello_world() -> FlaskApiResponse:
     response: ApiResponse[None] = ApiResponse(message="Hello, World!")
     return response.model_dump(), 200
-
-
-@app.route("/offices", methods=["GET"])
-def get_offices() -> FlaskApiResponse:
-    try:
-        with get_session() as session:
-            office_service = OfficeService(session)
-            offices = office_service.get_all()
-            list_response: ListResponse[OfficeRecord] = ListResponse(
-                items=list(offices), count=len(offices)
-            )
-            response: ApiResponse[ListResponse[OfficeRecord]] = ApiResponse(
-                data=list_response
-            )
-            return response.model_dump(), 200
-    except Exception as e:
-        error_response: ApiResponse[None] = ApiResponse(error=str(e))
-        return error_response.model_dump(), 500
-
-
-@app.route("/offices/<office_code>", methods=["GET"])
-def get_office(office_code: str) -> FlaskApiResponse:
-    try:
-        with get_session() as session:
-            office_service = OfficeService(session)
-            office = office_service.get_by_id(office_code)
-            response: ApiResponse[OfficeRecord] = ApiResponse(data=office)
-            return response.model_dump(), 200
-    except NotFoundException as e:
-        error_response: ApiResponse[None] = ApiResponse(error=str(e))
-        return error_response.model_dump(), 404
-    except Exception as e:
-        error_response = ApiResponse(error=str(e))
-        return error_response.model_dump(), 500
-
-
-@app.route("/offices", methods=["POST"])
-def create_office() -> FlaskApiResponse:
-    try:
-        data = request.get_json()
-        if not data:
-            error_response: ApiResponse[None] = ApiResponse(
-                error="No JSON data provided"
-            )
-            return error_response.model_dump(), 400
-        office = OfficeCreate(**data)
-        with get_session() as session:
-            office_service = OfficeService(session)
-            created_office = office_service.create(office)
-            session.commit()
-            response: ApiResponse[OfficeRecord] = ApiResponse(data=created_office)
-            return response.model_dump(), 201
-    except Exception as e:
-        error_response = ApiResponse(error=str(e))
-        return error_response.model_dump(), 500
-
-
-@app.route("/offices/<office_code>", methods=["PUT"])
-def update_office(office_code: str) -> FlaskApiResponse:
-    try:
-        data = request.get_json()
-        if not data:
-            error_response: ApiResponse[None] = ApiResponse(
-                error="No JSON data provided"
-            )
-            return error_response.model_dump(), 400
-        office = OfficeRecord(**data)
-        # Validate that office_code in URL matches office_code in body
-        if office.office_code != office_code:
-            error_response = ApiResponse(
-                error="office_code in URL must match office_code in request body"
-            )
-            return error_response.model_dump(), 400
-        with get_session() as session:
-            office_service = OfficeService(session)
-            updated_office = office_service.update(office)
-            session.commit()
-            response: ApiResponse[OfficeRecord] = ApiResponse(data=updated_office)
-            return response.model_dump(), 200
-    except NotFoundException as e:
-        error_response = ApiResponse(error=str(e))
-        return error_response.model_dump(), 404
-    except Exception as e:
-        error_response_2: ApiResponse[None] = ApiResponse(error=str(e))
-        return error_response_2.model_dump(), 500
-
-
-@app.route("/offices/<office_code>", methods=["DELETE"])
-def delete_office(office_code: str) -> FlaskApiResponse:
-    try:
-        with get_session() as session:
-            office_service = OfficeService(session)
-            office_service.delete_by_id(office_code)
-            session.commit()
-            response: ApiResponse[None] = ApiResponse(
-                message="Office deleted successfully"
-            )
-            return response.model_dump(), 204
-    except NotFoundException as e:
-        error_response: ApiResponse[None] = ApiResponse(error=str(e))
-        return error_response.model_dump(), 404
-    except Exception as e:
-        error_response = ApiResponse(error=str(e))
-        return error_response.model_dump(), 500

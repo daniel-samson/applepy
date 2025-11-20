@@ -66,18 +66,18 @@ def app(db_session: Session) -> Generator[Flask, None, None]:
     original_session = db_module.db.session
     db_module.db.session = SessionProxy(db_session)  # type: ignore[assignment]
 
-    # Patch get_session in the flask module where it's imported
+    # Patch get_session in the routes module where it's imported and used
     # This must be patched where get_session is USED, not where it's defined
-    import applepy.flask as flask_module
+    import applepy.routes.base as routes_module
 
-    original_get_session = flask_module.get_session
-    flask_module.get_session = lambda: get_test_session(db_session)  # type: ignore[assignment]
+    original_get_session = routes_module.get_session
+    routes_module.get_session = lambda: get_test_session(db_session)  # type: ignore[assignment]
 
     yield app
 
     # Restore original functions
     db_module.db.session = original_session
-    flask_module.get_session = original_get_session
+    routes_module.get_session = original_get_session
 
 
 @pytest.fixture()
