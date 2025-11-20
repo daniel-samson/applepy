@@ -1,8 +1,9 @@
 """Employee CRUD routes."""
 
-from applepy.domains.employees.schemas import EmployeeCreate, EmployeeRecord
-from applepy.domains.employees.service import EmployeeService
 from applepy.routes.base import CrudRoutes
+
+from .schemas import EmployeeCreate, EmployeeRecord
+from .service import EmployeeService
 
 
 class EmployeeRoutes(CrudRoutes[EmployeeCreate, EmployeeRecord, int]):

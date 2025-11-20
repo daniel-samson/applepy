@@ -1,8 +1,9 @@
 """Office CRUD routes."""
 
-from applepy.domains.offices.schemas import OfficeCreate, OfficeRecord
-from applepy.domains.offices.service import OfficeService
 from applepy.routes.base import CrudRoutes
+
+from .schemas import OfficeCreate, OfficeRecord
+from .service import OfficeService
 
 
 class OfficeRoutes(CrudRoutes[OfficeCreate, OfficeRecord, str]):
