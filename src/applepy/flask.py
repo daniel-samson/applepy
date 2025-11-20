@@ -1,25 +1,23 @@
-from typing import Any
-
 from flask import request
 
 from applepy.domains.offices.schemas import OfficeCreate, OfficeRecord
 from applepy.domains.offices.service import OfficeService
 from applepy.exceptions import NotFoundException
 from applepy.factory import create_app
-from applepy.responses import ApiResponse, ListResponse
+from applepy.responses import ApiResponse, FlaskApiResponse, ListResponse
 from applepy.session import get_session
 
 app = create_app()
 
 
 @app.route("/", methods=["GET"])
-def hello_world() -> tuple[dict[str, Any], int]:
+def hello_world() -> FlaskApiResponse:
     response: ApiResponse[None] = ApiResponse(message="Hello, World!")
     return response.model_dump(), 200
 
 
 @app.route("/offices", methods=["GET"])
-def get_offices() -> tuple[dict[str, Any], int]:
+def get_offices() -> FlaskApiResponse:
     try:
         with get_session() as session:
             office_service = OfficeService(session)
@@ -37,7 +35,7 @@ def get_offices() -> tuple[dict[str, Any], int]:
 
 
 @app.route("/offices/<office_code>", methods=["GET"])
-def get_office(office_code: str) -> tuple[dict[str, Any], int]:
+def get_office(office_code: str) -> FlaskApiResponse:
     try:
         with get_session() as session:
             office_service = OfficeService(session)
@@ -53,7 +51,7 @@ def get_office(office_code: str) -> tuple[dict[str, Any], int]:
 
 
 @app.route("/offices", methods=["POST"])
-def create_office() -> tuple[dict[str, Any], int]:
+def create_office() -> FlaskApiResponse:
     try:
         data = request.get_json()
         if not data:
@@ -74,7 +72,7 @@ def create_office() -> tuple[dict[str, Any], int]:
 
 
 @app.route("/offices/<office_code>", methods=["PUT"])
-def update_office(office_code: str) -> tuple[dict[str, Any], int]:
+def update_office(office_code: str) -> FlaskApiResponse:
     try:
         data = request.get_json()
         if not data:
@@ -104,7 +102,7 @@ def update_office(office_code: str) -> tuple[dict[str, Any], int]:
 
 
 @app.route("/offices/<office_code>", methods=["DELETE"])
-def delete_office(office_code: str) -> tuple[dict[str, Any], int]:
+def delete_office(office_code: str) -> FlaskApiResponse:
     try:
         with get_session() as session:
             office_service = OfficeService(session)

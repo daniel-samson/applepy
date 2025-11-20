@@ -1,10 +1,13 @@
 """Generic API response models for CRUD operations."""
 
-from typing import Generic, Optional, TypeVar
+from typing import Any, Generic, Optional, TypeVar
 
 from pydantic import BaseModel
 
 T = TypeVar("T")
+
+# Flask response type alias for type-safe API endpoints
+FlaskApiResponse = tuple[dict[str, Any], int]
 
 
 class ApiResponse(BaseModel, Generic[T]):
