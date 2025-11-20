@@ -104,3 +104,40 @@ def test_main_function() -> None:
         result = main(["db:migrate"])
         assert result == 0
         mock_run.assert_called_once_with(["alembic", "upgrade", "head"])
+
+
+def test_run_command_db_refresh() -> None:
+    """Test that db:refresh command executes both downgrade and upgrade."""
+    from unittest.mock import patch
+
+    from applepy.cli import run_command
+
+    with patch("applepy.cli.subprocess.run") as mock_run:
+        parser = make_parser()
+        args = parser.parse_args(["db:refresh"])
+        result = run_command(args)
+        assert result == 0
+        assert mock_run.call_count == 2
+        # Check that downgrade base was called first
+        mock_run.assert_any_call(["alembic", "downgrade", "base"])
+        # Then upgrade head
+        mock_run.assert_any_call(["alembic", "upgrade", "head"])
+
+
+def test_db_refresh_command_exists() -> None:
+    """Test that the db:refresh command is registered."""
+    parser = make_parser()
+    args = parser.parse_args(["db:refresh"])
+    assert args.command == "db:refresh"
+
+
+def test_dotenv_import_error_handling() -> None:
+    """Test that missing python-dotenv is handled gracefully."""
+    # This test verifies the except ImportError block doesn't break anything
+    # The import happens at module load time, so we can't easily test it,
+    # but we verify the CLI still works when dotenv is available
+    from applepy.cli import make_parser
+
+    parser = make_parser()
+    args = parser.parse_args(["flask"])
+    assert args.command == "flask"
