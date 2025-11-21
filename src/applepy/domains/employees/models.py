@@ -22,6 +22,7 @@ class Employee(Base):
     first_name = Column(String(50), nullable=False)
     email = Column(String(100), nullable=False)
     job_title = Column(String(50), nullable=False)
+    extension = Column(String(10), nullable=True)
     office_code: Mapped[Optional[str]] = mapped_column(
         ForeignKey("offices.office_code"), nullable=True
     )

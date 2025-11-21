@@ -12,8 +12,9 @@ class EmployeeBase(BaseModel):
     last_name: str
     email: str
     job_title: str
-    office_code: Optional[str]
-    reports_to: Optional[int]
+    extension: Optional[str] = None
+    office_code: Optional[str] = None
+    reports_to: Optional[int] = None
 
 
 class EmployeeCreate(EmployeeBase):
