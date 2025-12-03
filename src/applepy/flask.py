@@ -1,3 +1,4 @@
+from applepy.domains.customers.routes import CustomerRoutes
 from applepy.domains.employees.routes import EmployeeRoutes
 from applepy.domains.offices.routes import OfficeRoutes
 from applepy.factory import create_app
@@ -8,6 +9,7 @@ app = create_app()
 # Register domain route blueprints
 app.register_blueprint(OfficeRoutes().blueprint)
 app.register_blueprint(EmployeeRoutes().blueprint)
+app.register_blueprint(CustomerRoutes().blueprint)
 
 
 @app.route("/", methods=["GET"])
